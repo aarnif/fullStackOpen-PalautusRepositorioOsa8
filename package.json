@@ -1,0 +1,20 @@
+{
+  "name": "fullstackopen-palautusrepositorioosa8",
+  "version": "1.0.0",
+  "description": "Helsingin yliopiston Full Stack Open-kurssin osan 8 tehtävien palautusta varten luotu repositorio",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon index.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@apollo/server": "^4.9.5",
+    "graphql": "^16.8.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  }
+}
