@@ -126,6 +126,10 @@ const typeDefs = `
       genres: [String],
     ): Book
   }
+
+  type Mutation {
+    editAuthor(name: String!, setBornTo: Int): Author
+  }
 `;
 
 const resolvers = {
@@ -159,6 +163,14 @@ const resolvers = {
         authors = authors.concat(newAuthor);
       }
       return newBook;
+    },
+    editAuthor: (root, args) => {
+      const findAuthor = authors.find((author) => author.name === args.name);
+      if (findAuthor) {
+        findAuthor.born = args.setBornTo;
+        return findAuthor;
+      }
+      return null;
     },
   },
 };
