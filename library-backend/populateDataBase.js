@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 mongoose.set("strictQuery", false);
 const Author = require("./models/author");
 const Book = require("./models/book");
+const User = require("./models/user");
 
 require("dotenv").config();
 
@@ -12,6 +13,7 @@ console.log("connecting to", MONGODB_URI);
 const emptyDataBase = async () => {
   await Author.deleteMany({});
   await Book.deleteMany({});
+  await User.deleteMany({});
 };
 
 const addAuthors = async () => {
