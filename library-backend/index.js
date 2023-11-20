@@ -55,6 +55,7 @@ const typeDefs = `
     authorCount: Int
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+    allGenres: [String!]
     me: User
   }
 
@@ -91,6 +92,21 @@ const resolvers = {
       return await Book.find().populate("author");
     },
     allAuthors: async () => await Author.find({}),
+    allGenres: async (root, args) => {
+      const allGenres = [];
+      const allBooks = await Book.find({});
+
+      allBooks.forEach((book) => {
+        console.log(book.genres);
+        book.genres.forEach((genre) => {
+          if (!allGenres.includes(genre)) allGenres.push(genre);
+        });
+      });
+
+      allGenres.push("all genres");
+
+      return allGenres;
+    },
     me: (root, args, context) => {
       return context.currentUser;
     },
