@@ -136,7 +136,7 @@ const resolvers = {
         title: args.title,
         published: args.published,
         author: bookAuthor,
-        genres: args.genres,
+        genres: [...args.genres],
       });
 
       try {
@@ -164,7 +164,6 @@ const resolvers = {
         });
       }
 
-      console.log("Edit author");
       const findAuthor = await Author.findOne({ name: args.name });
       if (!findAuthor) {
         throw new GraphQLError("Could not find author", {
