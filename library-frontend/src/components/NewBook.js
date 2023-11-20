@@ -1,6 +1,6 @@
-import { ADD_BOOK, ALL_BOOKS } from "../queries";
+import { ADD_BOOK, ALL_BOOKS, RECOMMENDATIONS, USER } from "../queries";
 import { useState } from "react";
-import { useMutation } from "@apollo/client";
+import { useMutation, useQuery } from "@apollo/client";
 
 const NewBook = () => {
   const [title, setTitle] = useState("");
@@ -8,6 +8,7 @@ const NewBook = () => {
   const [published, setPublished] = useState("");
   const [genre, setGenre] = useState("");
   const [genres, setGenres] = useState([]);
+  const user = useQuery(USER);
 
   const [createBook] = useMutation(ADD_BOOK, {
     onError: (error) => {
@@ -20,6 +21,19 @@ const NewBook = () => {
           allBooks: allBooks.concat(response.data.addBook),
         };
       });
+      cache.updateQuery(
+        { query: RECOMMENDATIONS },
+        ({ booksInFavouriteGenre }) => {
+          const newRecommendations = response.data.addBook.genres.includes(
+            user.data.me.favouriteGenre
+          )
+            ? booksInFavouriteGenre.concat(response.data.addBook)
+            : booksInFavouriteGenre;
+          return {
+            booksInFavouriteGenre: newRecommendations,
+          };
+        }
+      );
     },
   });
 

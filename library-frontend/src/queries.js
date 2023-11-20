@@ -70,3 +70,25 @@ export const ALL_GENRES = gql`
     allGenres
   }
 `;
+
+export const USER = gql`
+  query {
+    me {
+      username
+      favouriteGenre
+    }
+  }
+`;
+
+export const RECOMMENDATIONS = gql`
+  query {
+    booksInFavouriteGenre {
+      title
+      author {
+        name
+      }
+      published
+      genres
+    }
+  }
+`;
