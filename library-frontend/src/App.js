@@ -6,7 +6,25 @@ import Recommendations from "./components/Recommendations";
 import { useApolloClient, useSubscription } from "@apollo/client";
 import { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
-import { BOOK_ADDED } from "./queries";
+import { ALL_BOOKS, BOOK_ADDED } from "./queries";
+
+// function that takes care of manipulating cache
+export const updateCache = (cache, query, addedBook) => {
+  // helper that is used to eliminate saving same person twice
+  const uniqByTitle = (a) => {
+    let seen = new Set();
+    return a.filter((item) => {
+      let k = item.title;
+      return seen.has(k) ? false : seen.add(k);
+    });
+  };
+
+  cache.updateQuery(query, ({ allBooks }) => {
+    return {
+      allBooks: uniqByTitle(allBooks.concat(addedBook)),
+    };
+  });
+};
 
 const App = () => {
   const [token, setToken] = useState(null);
@@ -15,8 +33,9 @@ const App = () => {
   useSubscription(BOOK_ADDED, {
     onData: ({ data }) => {
       console.log(data);
-      const bookTitle = data.data.bookAdded.title;
-      window.alert(`Added book titled ${bookTitle}`);
+      const addedBook = data.data.bookAdded;
+      window.alert(`Added book titled ${addedBook.title}`);
+      updateCache(client.cache, { query: ALL_BOOKS }, addedBook);
     },
   });
 
