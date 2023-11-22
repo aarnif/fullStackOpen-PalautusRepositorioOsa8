@@ -16,6 +16,13 @@ const emptyDataBase = async () => {
   await User.deleteMany({});
 };
 
+const addUsers = async () => {
+  for (let i = 0; i < users.length; ++i) {
+    let user = users[i];
+    const addUser = await new User(user).save();
+  }
+};
+
 const addAuthors = async () => {
   for (let i = 0; i < authors.length; ++i) {
     let author = authors[i];
@@ -24,12 +31,18 @@ const addAuthors = async () => {
 };
 
 const addBooks = async () => {
-  const getAllAuthors = await Author.find({});
+  // const getAllAuthors = await Author.find({});
   for (let i = 0; i < books.length; ++i) {
     let book = books[i];
     const findAuthor = await Author.findOne({ name: book.author });
     book = { ...book, author: findAuthor };
     const addBook = await new Book(book).save();
+    if (findAuthor) {
+      await Author.findOneAndUpdate(
+        { name: findAuthor.name },
+        { bookCount: findAuthor.bookCount + 1 }
+      );
+    }
   }
 };
 
@@ -40,6 +53,7 @@ const main = async () => {
     await emptyDataBase();
     await addAuthors();
     await addBooks();
+    await addUsers();
     console.log("close connection to MongoDB");
     mongoose.connection.close();
   } catch (error) {
@@ -49,29 +63,41 @@ const main = async () => {
 
 main();
 
+let users = [
+  {
+    username: "johnD",
+    favouriteGenre: "crime",
+  },
+];
+
 let authors = [
   {
     name: "Robert Martin",
     id: "afa51ab0-344d-11e9-a414-719c6709cf3e",
     born: 1952,
+    bookCount: 0,
   },
   {
     name: "Martin Fowler",
     id: "afa5b6f0-344d-11e9-a414-719c6709cf3e",
     born: 1963,
+    bookCount: 0,
   },
   {
     name: "Fyodor Dostoevsky",
     id: "afa5b6f1-344d-11e9-a414-719c6709cf3e",
     born: 1821,
+    bookCount: 0,
   },
   {
     name: "Joshua Kerievsky", // birthyear not known
     id: "afa5b6f2-344d-11e9-a414-719c6709cf3e",
+    bookCount: 0,
   },
   {
     name: "Sandi Metz", // birthyear not known
     id: "afa5b6f3-344d-11e9-a414-719c6709cf3e",
+    bookCount: 0,
   },
 ];
 

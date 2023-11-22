@@ -45,13 +45,6 @@ const resolvers = {
       return context.currentUser;
     },
   },
-
-  Author: {
-    bookCount: async (root) => {
-      const allBooks = await Book.find({}).populate("author");
-      return allBooks.filter((book) => book.author.name === root.name).length;
-    },
-  },
   Mutation: {
     addBook: async (root, args, context) => {
       const currentUser = context.currentUser;
@@ -67,7 +60,11 @@ const resolvers = {
       let bookAuthor = null;
       const findAuthor = await Author.findOne({ name: args.author });
       if (!findAuthor) {
-        bookAuthor = new Author({ name: args.author, born: null });
+        bookAuthor = new Author({
+          name: args.author,
+          born: null,
+          bookCount: 1,
+        });
         try {
           await bookAuthor.save();
         } catch (error) {
@@ -81,6 +78,10 @@ const resolvers = {
         }
       } else {
         bookAuthor = findAuthor;
+        await Author.findOneAndUpdate(
+          { name: bookAuthor.name },
+          { bookCount: bookAuthor.bookCount + 1 }
+        );
       }
       const newBook = new Book({
         title: args.title,
